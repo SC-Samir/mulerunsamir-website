@@ -3,37 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MuleRunSamir</title>
+    <title>MuleRunSamir - Redis Cache Demo</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             text-align: center;
-            margin-top: 100px;
+            margin-top: 50px;
             background-color: #f4f7f6;
             color: #333;
         }
         h1 {
             color: #0052cc;
-            font-size: 3rem;
-        }
-        p {
-            font-size: 1.2rem;
-            color: #555;
+            font-size: 2.5rem;
         }
         .container {
-            padding: 20px;
+            padding: 30px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             display: inline-block;
+            max-width: 600px;
+            text-align: left;
+        }
+        .stat-box {
+            background: #eef2ff;
+            border-left: 4px solid #0052cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .stat-label {
+            font-weight: bold;
+            color: #0052cc;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            margin-top: 5px;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .refresh-hint {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 20px;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Welcome to MuleRunSamir!</h1>
-        <p>This website has been successfully deployed on Scalingo.</p>
-        <p>It includes a proper <code>Procfile</code> and follows Scalingo best practices.</p>
+        <p>This application is deployed on Scalingo and uses <strong>Redis</strong> for caching and state management.</p>
+        
+        <div class="stat-box">
+            <div class="stat-label">Total Page Views (Redis Counter)</div>
+            <div class="stat-value">{{VISITS}}</div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-label">Data Generation Status</div>
+            <div class="stat-value">{{CACHE_STATUS}}</div>
+            <div style="margin-top: 10px; font-size: 0.9rem;">
+                Last updated: <strong>{{CACHE_TIME}}</strong><br>
+                Data: <code>{{DATA}}</code>
+            </div>
+        </div>
+
+        <p class="refresh-hint">💡 Tip: Refresh the page multiple times quickly. The first request generates new data (takes ~500ms), and subsequent requests within 10 seconds are served instantly from the Redis/memory cache.</p>
     </div>
 </body>
 </html>
