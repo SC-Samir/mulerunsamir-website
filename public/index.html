@@ -194,6 +194,26 @@
             color: var(--warning);
         }
 
+        .tutorial-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .tutorial-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 640px) {
             .container {
                 padding: 24px;
@@ -236,6 +256,10 @@
             <p class="hint-text">
                 <strong>Pro Tip:</strong> Refresh the page multiple times quickly. The first request simulates an expensive operation (~500ms), while subsequent requests within 10 seconds are served instantly from the cache.
             </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 32px;">
+            <a href="/tutorial" class="tutorial-btn">📖 Voir le tutoriel d'automatisation</a>
         </div>
     </div>
 </body>

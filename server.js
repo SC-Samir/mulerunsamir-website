@@ -57,6 +57,10 @@ async function incrementVisits() {
 
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(html);
+    } else if (req.url === '/tutorial' || req.url === '/tutorial.html') {
+      let html = fs.readFileSync(path.join(__dirname, 'public', 'tutorial.html'), 'utf8');
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(html);
     } else if (req.url === '/api/data') {
       const cacheInfo = await getCachedData();
       res.writeHead(200, { 'Content-Type': 'application/json' });

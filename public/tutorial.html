@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriel d'automatisation MuleRun et Scalingo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 16px;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-top: 40px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        p { margin-bottom: 16px; color: var(--text-secondary); }
+
+        ul, ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+            color: var(--text-secondary);
+        }
+
+        li { margin-bottom: 8px; }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .prompt-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--accent);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        pre {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        pre code {
+            background: none;
+            color: var(--text-primary);
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        td { color: var(--text-secondary); }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 32px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: var(--accent); text-decoration: none; }
+
+        @media (max-width: 640px) {
+            .container { padding: 24px; }
+            h1 { font-size: 1.75rem; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 8px 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Retour à l'application</a>
+        
+        <h1>Automatiser vos déploiements Scalingo avec MuleRun</h1>
+        <p class="subtitle">Un guide étape par étape pour orchestrer votre DevOps en langage naturel.</p>
+
+        <p>Ce tutoriel démontre comment utiliser <strong>MuleRun</strong>, votre agent de développement propulsé par l'IA, pour automatiser entièrement la création, la configuration et le déploiement d'une application Node.js avec mise en cache Redis sur le PaaS Scalingo.</p>
+
+        <h2>1. Ce que vous allez construire</h2>
+        <p>Vous allez demander à MuleRun de construire une application web Node.js haute performance qui :</p>
+        <ul>
+            <li>Se connecte à une base de données Redis managée pour la mise en cache et la gestion d'état.</li>
+            <li>Dispose d'une interface utilisateur moderne et responsive.</li>
+            <li>Est déployée automatiquement sur Scalingo via l'intégration GitHub.</li>
+            <li>Est entièrement vérifiée par MuleRun grâce à l'analyse automatique des logs et des requêtes HTTP.</li>
+        </ul>
+
+        <h2>2. Prérequis</h2>
+        <ul>
+            <li>Un accès à <strong>MuleRun</strong>.</li>
+            <li>Un <strong>token API Scalingo</strong> (Générez-en un sur : <code>https://dashboard.scalingo.com/account/tokens</code>).</li>
+            <li>Un <strong>Personal Access Token GitHub</strong> avec les scopes <code>repo</code> et <code>read:org</code>.</li>
+        </ul>
+        <p><em>Note : Vous n'avez pas besoin d'installer Node.js, Git ou la CLI Scalingo sur votre machine locale. MuleRun gère l'environnement pour vous.</em></p>
+
+        <h2>3. Étape 1 : Générer l'application avec MuleRun</h2>
+        <p>Copiez et collez ce prompt dans MuleRun :</p>
+        <div class="prompt-box">"Crée une application web Node.js dans un nouveau dossier appelé `mulerun-scalingo-app`. Elle doit inclure :
+1. Un `package.json` avec `redis` comme dépendance et Node.js `20.x`.
+2. Un fichier `server.js` qui se connecte à Redis via `SCALINGO_REDIS_URL` avec un mécanisme de cache (TTL 10s).
+3. Un `Procfile` avec la commande `web: node server.js`.
+4. Un fichier `public/index.html` moderne avec un thème sombre."
+        </div>
+        <p><strong>Ce que fait MuleRun :</strong> Analyse la demande, génère un code prêt pour la production, crée la structure des dossiers et garantit les bonnes pratiques.</p>
+
+        <h2>4. Étape 2 : Automatiser la configuration Scalingo</h2>
+        <div class="prompt-box">"J'ai mon token API Scalingo : `tk-us-VOTRE_TOKEN`. 
+Veuillez utiliser la CLI ou l'API Scalingo pour :
+1. Créer une nouvelle application nommée `my-mulerun-app`.
+2. Provisionner un addon `redis-starter-256`.
+3. Confirmer que l'application et l'addon ont été créés avec succès."
+        </div>
+        <p><strong>Ce que fait MuleRun :</strong> S'authentifie, exécute les commandes dans son sandbox sécurisé, et vous confirme le succès avec l'URL de l'application.</p>
+
+        <h2>5. Étape 3 : Déclencher le déploiement avec GitHub</h2>
+        <div class="prompt-box">"J'ai un token GitHub : `ghp_VOTRE_TOKEN`. 
+Veuillez :
+1. Initialiser un dépôt Git et créer un dépôt GitHub public.
+2. Commiter le code et le pousser sur la branche `main`.
+3. Lier ce dépôt à mon application Scalingo via l'intégration GitHub.
+4. Déclencher un déploiement manuel."
+        </div>
+
+        <h2>6. Étape 4 : Vérifier et itérer</h2>
+        <div class="prompt-box">"Vérifie les logs de déploiement pour t'assurer que le build a réussi et que le client Redis s'est connecté. Ensuite, fais une requête HTTP vers l'URL de l'application et montre-moi la réponse."
+        </div>
+        <p>En cas d'erreur, MuleRun lira automatiquement les logs, diagnostiquera le problème, corrigera le code et relancera le déploiement.</p>
+
+        <h2>7. Pourquoi utiliser MuleRun avec Scalingo ?</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Flux de travail traditionnel</th>
+                    <th>Flux de travail automatisé avec MuleRun</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Écriture manuelle du code répétitif.</td>
+                    <td><strong>Génération instantanée</strong> de code prêt pour la production.</td>
+                </tr>
+                <tr>
+                    <td>Installation locale des outils (Git, CLI, Node).</td>
+                    <td><strong>Zéro configuration locale</strong>. Sandbox sécurisé et éphémère.</td>
+                </tr>
+                <tr>
+                    <td>Copier-coller des commandes CLI et débogage.</td>
+                    <td><strong>Orchestration en langage naturel</strong>.</td>
+                </tr>
+                <tr>
+                    <td>Vérification manuelle des logs et tests.</td>
+                    <td><strong>Vérification automatisée</strong> et preuve du succès.</td>
+                </tr>
+                <tr>
+                    <td>Correction des erreurs nécessitant un changement de contexte.</td>
+                    <td><strong>Auto-réparation (Self-healing)</strong> en boucle fermée.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>8. Pourquoi Scalingo est la plateforme idéale pour les agents IA ?</h2>
+        <ul>
+            <li><strong>Approche "API-First"</strong> : Scalingo expose une API REST complète et une CLI robuste pour un contrôle 100% programmatique.</li>
+            <li><strong>Configuration automatique</strong> : L'injection automatique des variables d'environnement (ex: <code>SCALINGO_REDIS_URL</code>) simplifie la gestion des secrets pour l'agent.</li>
+            <li><strong>Environnement prévisible</strong> : Les buildpacks standardisés éliminent les erreurs "ça marche sur ma machine".</li>
+            <li><strong>Boucle de rétroaction rapide</strong> : L'accès instantané aux logs permet à l'IA de diagnostiquer et d'auto-corriger les erreurs en quelques secondes.</li>
+            <li><strong>Souveraineté et sécurité</strong> : L'hébergement européen (3DS Outscale) et les certifications comme SecNumCloud garantissent la conformité des projets.</li>
+        </ul>
+
+        <h2>Prochaines étapes</h2>
+        <p>Essayez ces prompts de suivi pour itérer sur le projet :</p>
+        <ul>
+            <li><em>"Ajoute un endpoint <code>/api/reset-cache</code> qui vide le cache Redis."</em></li>
+            <li><em>"Scale le conteneur web à 2 instances de taille L."</em></li>
+            <li><em>"Change le thème de l'interface en mode clair avec Tailwind CSS."</em></li>
+        </ul>
+        <p style="text-align: center; margin-top: 40px; font-style: italic; color: var(--text-secondary);">
+            Avec MuleRun, votre flux de travail DevOps n'est limité que par votre imagination.
+        </p>
+    </div>
+</body>
+</html>
