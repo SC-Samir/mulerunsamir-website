@@ -4,78 +4,239 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MuleRunSamir - Redis Cache Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-            background-color: #f4f7f6;
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
         }
-        h1 {
-            color: #0052cc;
-            font-size: 2.5rem;
-        }
+
         .container {
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            display: inline-block;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
             max-width: 600px;
-            text-align: left;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s ease-out;
         }
-        .stat-box {
-            background: #eef2ff;
-            border-left: 4px solid #0052cc;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
         .stat-label {
-            font-weight: bold;
-            color: #0052cc;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
         }
+
         .stat-value {
-            font-size: 1.5rem;
-            margin-top: 5px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
         }
+
+        .stat-value.accent {
+            color: var(--accent);
+        }
+
+        .cache-details {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .cache-details strong {
+            color: var(--text-primary);
+        }
+
         code {
-            background: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            word-break: break-all;
         }
-        .refresh-hint {
-            font-size: 0.85rem;
-            color: #888;
-            margin-top: 20px;
-            font-style: italic;
+
+        .hint-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .hint-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .hint-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .hint-text strong {
+            color: var(--warning);
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .stat-value {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to MuleRunSamir!</h1>
-        <p>This application is deployed on Scalingo and uses <strong>Redis</strong> for caching and state management.</p>
-        
-        <div class="stat-box">
-            <div class="stat-label">Total Page Views (Redis Counter)</div>
-            <div class="stat-value">{{VISITS}}</div>
+        <div class="header">
+            <div class="badge">Live Application</div>
+            <h1>MuleRunSamir</h1>
+            <p class="subtitle">Deployed on Scalingo with Redis-powered caching and state management.</p>
         </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Page Views</div>
+                <div class="stat-value accent">{{VISITS}}</div>
+            </div>
 
-        <div class="stat-box">
-            <div class="stat-label">Data Generation Status</div>
-            <div class="stat-value">{{CACHE_STATUS}}</div>
-            <div style="margin-top: 10px; font-size: 0.9rem;">
-                Last updated: <strong>{{CACHE_TIME}}</strong><br>
-                Data: <code>{{DATA}}</code>
+            <div class="stat-card">
+                <div class="stat-label">Data Generation Status</div>
+                <div class="stat-value">{{CACHE_STATUS}}</div>
+                <div class="cache-details">
+                    Last updated: <strong>{{CACHE_TIME}}</strong><br>
+                    Payload: <code>{{DATA}}</code>
+                </div>
             </div>
         </div>
 
-        <p class="refresh-hint">💡 Tip: Refresh the page multiple times quickly. The first request generates new data (takes ~500ms), and subsequent requests within 10 seconds are served instantly from the Redis/memory cache.</p>
+        <div class="hint-box">
+            <span class="hint-icon">💡</span>
+            <p class="hint-text">
+                <strong>Pro Tip:</strong> Refresh the page multiple times quickly. The first request simulates an expensive operation (~500ms), while subsequent requests within 10 seconds are served instantly from the cache.
+            </p>
+        </div>
     </div>
 </body>
 </html>
